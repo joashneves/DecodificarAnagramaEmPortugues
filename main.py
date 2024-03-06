@@ -1,70 +1,58 @@
-from itertools import product
+def create_array(word_size, anagram_word):
+    # Criando a lista
+    array_list = ['_' for _ in range(word_size)]
+    letter_counts = {}
 
-def CriarListaArray(tamanhoDaPalavra, palavraAnagrama):
-    # Criando a matriz
-    matriz = []
+    # Contando as letras
+    for letter in anagram_word:
+        if letter not in letter_counts:
+            letter_counts[letter] = 1
+        else:
+            letter_counts[letter] += 1
 
-    palavrasListaTemp = []
+    return array_list, letter_counts
 
-    for letra in palavraAnagrama:
-        tamanhoAnagrama = len(palavraAnagrama) * [letra];
-        matriz.append(tamanhoAnagrama)
+def anagram_decoder(array_list, letter_counts, word_size, word_list):
+    possible_words = []
 
-    # Imprimindo a matriz
-    for linha in matriz:
-        print(linha)
-    print(matriz[0][1])
+    for word in word_list:
+        word_array = list(word)
+        if len(word) == word_size:
+            word_letter_counts = {}
+            for letter in word:
+                if letter not in word_letter_counts:
+                    word_letter_counts[letter] = 1
+                else:
+                    word_letter_counts[letter] += 1
 
-    # Criar uma lista vazia
-    tamanhoX = []
+            if word_letter_counts == letter_counts:
+                found = True
+                for i in range(word_size):
+                    if array_list[i] != '_' and array_list[i] != word_array[i]:
+                        found = False
+                        break
 
-    # Adicionar elementos à lista
-    for i in range(tamanhoDaPalavra):
-        tamanhoX.append(i)
+                if found:
+                    possible_words.append(word)
 
-    print(tamanhoX)
-    x = 0
-    while len(palavrasListaTemp) < tamanhoDaPalavra:
-        y = 0
-        palavrasArrayTemp = []
+    return possible_words
 
-        palavrasArrayTemp.append(matriz[y][tamanhoX[x]])
-        print(f'{y},{tamanhoX[x]},{palavrasArrayTemp}')
-
-        if(len(palavrasArrayTemp) >= tamanhoDaPalavra):
-            palavrasListaTemp.append(''.join(palavrasArrayTemp))
-
-        #Se todos os numeros da array forem o tamanho
-        if( tamanhoX[x] > tamanhoDaPalavra):
-            x = x + 1
-
-        tamanhoX[x] = tamanhoX[x] + 1
-        y = y + 1
-
-    print(palavrasListaTemp)
-    print("Número total de palavras:", len(palavrasListaTemp))
-    print("Algumas das palavras possíveis:", palavrasListaTemp[:5])  # Exibindo as primeiras 10 palavras como exemplo
-    return palavrasListaTemp
-
-#Função para obter a palavra do usuario
-def PerguntarPalavra():
+def get_word():
     print("Escreva um anagrama:")
     return input()
 
-#Função para decodificar e achar os anagramas da palavra fornecida
-def PalavrasAchadas(palavraAnagrama):
-    # Ler um arquivo de texto com uma lista de palavras em português
+def main():
+    anagram_word = get_word()
+    array_list, letter_counts = create_array(len(anagram_word), anagram_word)
+
     with open("palavras.txt", "r", encoding="utf-8") as arquivo:
-        palavrasLista = arquivo.read().splitlines()
+        word_list = arquivo.read().splitlines()
 
-    tamanhoDaPalavraAnagrama = len(palavraAnagrama)
+    possible_words = anagram_decoder(array_list, letter_counts, len(anagram_word), word_list)
 
-    ListaDePalavras = CriarListaArray(tamanhoDaPalavraAnagrama, palavraAnagrama)
+    print(f"Número total de palavras: {len(possible_words)}")
+    print(f"Algumas das palavras possíveis: {possible_words[:5]}")
 
 
-# Inicia o script
 if __name__ == '__main__':
-    obterPalavra = PerguntarPalavra()
-    PalavrasAchadas(obterPalavra)
-
-
+    main()
